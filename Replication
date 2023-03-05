@@ -1,0 +1,17 @@
+
+
+Use [SERGE]
+EXEC sp_scriptpublicationcustomprocs @publication='NODE1_SERGE_NODE2'
+
+
+
+
+--CREATE SUBSCRIBER
+Use DBName
+GO
+
+EXEC sp_addsubscription
+@publication ='NODE1_SERGE_NODE2',     -- Name of the publication
+@subscriber = '192.168.100.5',         --Fully qualified name or IP of subscriber server
+@destination_db ='SERGE',              --Name of the database you just restored (doesn't have to be the same as the publisher)
+@s
