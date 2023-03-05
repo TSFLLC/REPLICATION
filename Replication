@@ -14,4 +14,42 @@ EXEC sp_addsubscription
 @publication ='NODE1_SERGE_NODE2',     -- Name of the publication
 @subscriber = '192.168.100.5',         --Fully qualified name or IP of subscriber server
 @destination_db ='SERGE',              --Name of the database you just restored (doesn't have to be the same as the publisher)
-@s
+@sync_type = 'none'   
+
+
+
+RECONFIGURE ;
+GO
+
+EXEC sp_configure 'max text repl size', -1 ;
+GO
+
+RECONFIGURE;
+GO
+
+
+--2. Run this to Check  identified colunm if set for replication or not .
+
+SELECT  
+        @@Servername [Server],
+        DB_NAME() [Database] ,
+        QUOTENAME(SCHEMA_NAME(t.schema_id)) as SchemaName,  
+        QUOTENAME(t.name) AS TableName,
+        c.name AS ColumnName,
+        c.object_id as ObjectID,
+        c.is_not_for_replication,
+        'EXEC sys.sp_identitycolumnforreplication '+cast(c.object_id as varchar(20)) + ', 1 ;  -- [' + t.name + ']' as CommandTORun_SetIdendityNOTForReplication ,
+        'EXEC sys.sp_identitycolumnforreplication '+cast(c.object_id as varchar(20)) + ', 0 ;  -- [' + t.name + ']'  as CommandTORun_SetIdendityFORReplication
+    FROM    sys.identity_columns AS c
+        INNER JOIN  sys.tables AS t ON t.[object_id] = c.[object_id]
+        WHERE   c.is_identity = 1
+
+       order by TableName
+
+
+	1. Removed Replication
+
+Use master
+Go
+sp_removedbreplication 'DBName'
+go
