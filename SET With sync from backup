@@ -1,0 +1,39 @@
+---1-Create publication
+
+--2-Change to initialize_from_backup 
+EXEC sp_changepublication
+@publication = 'PUB_Name', --Enter your publication_name
+@property = 'allow_initialize_from_backup' ,
+@value = 'True'
+GO
+
+--3-change to imediate sync
+EXEC sp_changepublication
+@publication = 'PUB_Name', --Enter your publication name
+@property = 'immediate_sync' , 
+@value = 'True' 
+GO 
+
+--4-backup database Trace to disk ='D:\backup\Trace.bak' with init, stats =5
+BACKUP DATABASE [FLXMI3] TO  DISK = N'F:\Backup\FLXMI3.Diff'  WITH DIFFERENTIAL, STATS = 5
+
+---5-Restore db to subscriber
+
+--6- Create subscriber  (Run this on publisher)
+
+Use [FLXMI3] ---(in this example FLXXTR)
+Go
+
+EXEC sp_addsubscription
+
+@publication ='PUB_Name',-- Name of the publication
+
+@subscriber = 'Server_Target', -- Fully qualified name or IP of subscriber server
+
+@destination_db ='DBName', -- Name of the database you just restored (doesn't have to be the same as the publisher)
+
+@sync_type = 'initialize with backup', -- no need to change this
+
+@backupdevicetype = 'disk',-- no need to change this
+
+@backupdevicename = 'F:\backupDBName.Diff' -- Pointe to the last backupfile that was restored, but from the folder on the on the publishing server. If you restored trans logs also the last translog file is what you need to put here
