@@ -1,3 +1,14 @@
+Use [DBName]    --Database Name
+GO
+
+EXEC sp_dropsubscription
+
+@publication ='PUB_Name',  ---Publication Name
+
+@subscriber = 'Target_server',     --Subscription server Name
+
+@article = 'all'
+
 
 
 Use [SERGE]
