@@ -1,0 +1,14 @@
+Step to  drop distribution
+
+
+--1- Run this to find spid holding distribution
+SELECT spid FROM sys.sysprocesses WHERE dbid = db_id('distribution')
+
+--2- Kill those pid
+
+
+--3- Run this to drop distribution
+
+Use master;
+Go
+exec sp_dropdistributor @no_checks = 1
