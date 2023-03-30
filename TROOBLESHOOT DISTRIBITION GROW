@@ -1,0 +1,17 @@
+--To read the error log
+EXEC sys.sp_readerrorlog 0,1,'Replication','-'
+
+
+--Check the status of immediate_Sync
+Select immediate_sync,* from distribution.DBO.MSPublications
+
+--Change the stutus of imediate_sync to Fase
+sp_changepublication @publication = 'Publication Name', @property = 'immediate_sync' , @Value ='False'
+
+
+  --Check any Error on Distributor
+  SELECT 
+	error_text
+	, [time]
+FROM distribution..MSrepl_errors
+ORDER BY [time] DESC
