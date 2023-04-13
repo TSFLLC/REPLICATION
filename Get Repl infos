@@ -1,0 +1,8 @@
+1-GET PUBLISHER  database
+SELECT name, database_id, is_published, is_subscribed, is_merge_published
+FROM sys.databases
+WHERE is_published = 1 OR is_subscribed = 1 OR is_merge_published = 1
+
+2-Get subscriber database
+USE [DB_Name]
+EXEC sp_helpsubscription @publication = 'PublicationName'
