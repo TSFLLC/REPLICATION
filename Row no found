@@ -4,8 +4,9 @@ Solution of this error to make replication work back to the normal running state
 
 We can check with following query, whether request at publisher was of update or delete statement
 
-
-  1-
+------Transaction sequence number: 0x0003BB0E000001DF000600000000, Command ID: 1   NEED TO FIND THE CORRESPONDING ONE
+ 
+ 1-
 USE [distribution]
 
 SELECT *
