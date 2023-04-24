@@ -1,0 +1,47 @@
+This error usually comes when particular record does not exists on subscriber and a update or delete command executed for same record on primary server 
+and which got replicated on subscriber as well.As this records does not exists on subscriber, replication throws an error " Row Not Found"
+Solution of this error to make replication work back to the normal running state:
+
+We can check with following query, whether request at publisher was of update or delete statement
+
+
+  1-
+USE [distribution]
+
+SELECT *
+FROM   msrepl_commands 
+WHERE  publisher_database_id = 1
+       AND command_id = 1
+       AND xact_seqno = 0x00099979000038D6000100000000
+   
+   2-    
+ We can get artical id information from above query, which can be passed to below proc:      
+       EXEC Sp_browsereplcmds
+  @article_id = 813,
+  @command_id = 1,
+  @xact_seqno_start = '0x00099979000038D60001',
+  @xact_seqno_end = '0x00099979000038D60001',
+  @publisher_database_id = 1
+  
+  Above query will give information about, whether it was a update statement or delete statement.
+
+In Case of Delete Statement
+That record can be directly deleted from msrepl_commands objects so that replication won't make retry attempts for the record.
+     
+     3. statement to delete records in msrepl_comment
+     DELETE FROM msrepl_commands
+WHERE  publisher_database_id = 1
+       AND command_id =1
+       AND xact_seqno = 0x00099979000038D6000100000000 
+       
+       4- 
+       In case of update statement:
+You need to insert that record manually from publisher DB to subscriber DB:
+       
+       
+       
+       
+       
+       
+       
+       
