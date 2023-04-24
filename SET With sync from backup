@@ -11,7 +11,7 @@ GO
 EXEC sp_changepublication
 @publication = 'PUB_Name', --Enter your publication name
 @property = 'immediate_sync' , 
-@value = 'True' 
+@value = 'False' 
 GO 
 
 --4-backup database Trace to disk ='D:\backup\Trace.bak' with init, stats =5
