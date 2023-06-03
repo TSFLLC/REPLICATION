@@ -1,0 +1,49 @@
+--CREATE REPL_STATUS TABLE                       ---This table should be created in DBA Database.
+CREATE TABLE [dbo].[replication_status](
+	[ID] [int] Identity(1,1) NOT NULL,
+	[Date] [datetime] NULL,
+	[PublicationName] [varchar](50) NULL,
+	[Agent_Name] [varchar](150) NULL,
+	[ResultID] [int] NULL
+)
+
+
+---MONITOR AGENT STATUS
+
+USE distribution
+GO
+
+DECLARE @Results TABLE(ResultsID int,replicationName VARCHAR(40), agent_name Varchar(200))
+
+Declare @Message varchar(512)
+
+set @Message = 'Replication on Server: ' + @@SERVERNAME + ' having Replication Issues'
+
+
+ INSERT INTO [DBA]..[replication_status] ( [Date], [PublicationName], [agent_name], [ResultID])
+ SELECT GETDATE(), publication, agent_name,status
+ FROM dbo.MSReplication_monitordata;
+
+insert into @Results(ResultsID,replicationName, agent_name)
+SELECT status, publication, agent_name -- AS ReplicationAgentsStatus
+
+FROM dbo.MSReplication_monitordata
+
+--WHERE publication = 'ALL'
+
+--select * from @Results
+--WHERE publication = 'Publication Name'
+
+if((select count(ResultsID) from @Results where ResultsID > 4) > 0)
+
+BEGIN
+
+    ----- Send Email Notice
+
+    EXEC msdb.dbo.sp_send_dbmail  
+    @profile_name = 'Mail profile',  
+    @recipients = 'email',  
+    @body = @Message,  
+    @subject = 'SQL Server Replication Issue!';
+
+END
