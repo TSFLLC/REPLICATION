@@ -24,6 +24,8 @@ set @Message = 'Replication on Server: ' + @@SERVERNAME + ' having Replication I
  SELECT GETDATE(), publication, agent_name,status
  FROM dbo.MSReplication_monitordata;
 
+DELETE FROM [DBA]..[replication_status]  WHERE Date >= DATEADD(DAY, -2, GETDATE());
+
 insert into @Results(ResultsID,replicationName, agent_name)
 SELECT status, publication, agent_name -- AS ReplicationAgentsStatus
 
