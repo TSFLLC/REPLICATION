@@ -1,6 +1,9 @@
 ---1-Create publication
 
---2-Change to initialize_from_backup 
+--2-Change to initialize_from_backup
+Use [DBname ---(in this example TESTDB)
+Go
+
 EXEC sp_changepublication
 @publication = 'PUB_Name', --Enter your publication_name
 @property = 'allow_initialize_from_backup' ,
@@ -8,6 +11,9 @@ EXEC sp_changepublication
 GO
 
 --3-change to imediate sync
+Use [DBname
+Go
+
 EXEC sp_changepublication
 @publication = 'PUB_Name', --Enter your publication name
 @property = 'immediate_sync' , 
@@ -21,7 +27,7 @@ BACKUP DATABASE [FLXMI3] TO  DISK = N'F:\Backup\FLXMI3.Diff'  WITH DIFFERENTIAL,
 
 --6- Create subscriber  (Run this on publisher)
 
-Use [FLXMI3] ---(in this example FLXXTR)
+Use [DBname ---(in this example TESTDB)
 Go
 
 EXEC sp_addsubscription
