@@ -29,3 +29,17 @@ EXEC sp_adddistributiondb
 GO
 
 
+-- 5--Check if distribution database is configured
+IF EXISTS (
+    SELECT name
+    FROM sys.databases
+    WHERE name = N'DistributionDB' -- Replace with your distribution database name
+)
+BEGIN
+    PRINT 'Distribution database is configured.';
+END
+ELSE
+BEGIN
+    PRINT 'Distribution database is not configured.';
+END
+
