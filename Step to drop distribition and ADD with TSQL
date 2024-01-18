@@ -12,3 +12,4 @@ SELECT spid FROM sys.sysprocesses WHERE dbid = db_id('distribution')
 Use master;
 Go
 exec sp_dropdistributor @no_checks = 1
+
