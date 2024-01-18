@@ -9,7 +9,23 @@ SELECT spid FROM sys.sysprocesses WHERE dbid = db_id('distribution')
 
 --3- Run this to drop distribution
 
-Use master;
-Go
-exec sp_dropdistributor @no_checks = 1
+use [master]
+exec sp_dropdistributor @no_checks = 1, @ignore_distributor = 1
+GO
+
+--4-ADD DISTRIBUTOR
+
+exec sp_adddistributor @distributor = 'DB-PRD-MITC3A', @password = 'kVk828`=*tj:'
+
+EXEC sp_adddistributiondb
+    @database = N'DistributionDB',
+    @data_folder = N'H:\Data',
+    @log_folder = N'L:\Log',
+    @log_file_size = 25, -- in MB
+    @min_distretention = 0,
+    @max_distretention = 72,
+    @history_retention = 48,
+    @security_mode = 1; -- 1 for Windows Authentication, 0 for SQL Server Authentication
+GO
+
 
