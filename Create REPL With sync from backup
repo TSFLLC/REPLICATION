@@ -21,7 +21,7 @@ EXEC sp_changepublication
 GO 
 
 --4-backup database Trace to disk ='D:\backup\Trace.bak' with init, stats =5
-BACKUP DATABASE [FLXMI3] TO  DISK = N'F:\Backup\FLXMI3.Diff'  WITH DIFFERENTIAL, STATS = 5
+BACKUP DATABASE [DBName] TO  DISK = N'F:\Backup\Dbnames.Diff'  WITH DIFFERENTIAL, STATS = 5
 
 ---5-Restore db to subscriber
 
