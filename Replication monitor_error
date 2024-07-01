@@ -1,0 +1,35 @@
+USE [distribution]
+GO
+
+Declare  @repl_error Table(
+     Date Datetime,
+	[id] [int]  NULL,
+	[time] [datetime]  NULL,
+    [error_code] [sysname] NULL,
+	[error_text] [nvarchar](max) NULL
+) 
+
+Insert into @repl_error (Date,[id],[time],[error_code],[error_text]) 
+select Getdate(), ID,[time], error_code, error_text
+from  MSrepl_errors 
+where time >= DATEADD(minute, -30, GETDATE())  order by time desc
+
+--select * from @repl_error
+
+Declare @Message varchar(512)
+
+set @Message = 'Replication on Server: ' + @@SERVERNAME + ' having Replication Issues'
+
+if((select count(ID) from @repl_error where error_text is not null) > 0)
+
+BEGIN
+
+    ----- Send Email Notice
+
+    EXEC msdb.dbo.sp_send_dbmail  
+    @profile_name = Profile_mail',  
+    @recipients = 'mail.com',  
+    @body = @Message,  
+    @subject = 'SQL Server Replication Issue!';
+
+END
