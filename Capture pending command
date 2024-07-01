@@ -1,0 +1,63 @@
+INSERT INTO DBA.[dbo].[Capture_PendingCommands]
+           ([publisher_database_id]
+           ,[article_id]
+           ,[agent_id]
+           ,[UndelivCmdsInDistDB]
+           ,[DelivCmdsInDistDB])
+
+      SELECT s.publisher_database_id, t.article_id,s.agent_id,
+    'UndelivCmdsInDistDB'=SUM(CASE WHEN xact_seqno > h.maxseq THEN 1 ELSE 0 END),
+    'DelivCmdsInDistDB'=SUM(CASE WHEN xact_seqno <= h.maxseq THEN 1 ELSE 0 END)
+    FROM (SELECT article_id,publisher_database_id, xact_seqno
+    FROM MSrepl_commands (NOLOCK) ) as t
+    JOIN (SELECT agent_id,article_id,publisher_database_id FROM MSsubscriptions
+    (NOLOCK) ) AS s
+    ON (t.article_id = s.article_id AND
+    t.publisher_database_id=s.publisher_database_id )
+    JOIN (SELECT agent_id,'maxseq'= isnull(max(xact_seqno),0x0) FROM
+    MSdistribution_history (NOLOCK) GROUP BY agent_id) as h
+    ON (h.agent_id=s.agent_id)
+    GROUP BY t.article_id,s.agent_id,s.publisher_database_id
+
+
+
+
+
+
+
+Replication commands
+
+
+CREATE PROCEDURE [dbo].[Monitor_Replcommands]
+AS
+
+BEGIN
+
+
+SET NOCOUNT ON
+
+DECLARE @cnt int
+DECLARE @msg nVarchar(1000)
+
+select top 1 @cnt = cnt  from DBA.[dbo].[ReplCommands_Detail] where publication = 'PublicationName' and article = 'Transactions' 
+ order by dateofcapture desc
+
+
+
+IF  @cnt > 1000000
+BEGIN
+
+
+SET @MSG = 'Replication traffic is behind ' +cast(@cnt as Varchar(15)) + 'records in PublicationPublicationName for the article Transactions' 
+EXEC msdb.dbo.sp_send_dbmail  
+	  
+	@recipients= 'mail recipient', 
+  
+	@subject = 'Replication traffic on servername'  ,    
+	@BODY = @MSG
+ end   
+
+
+
+END
+GO
